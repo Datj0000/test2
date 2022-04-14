@@ -694,8 +694,8 @@
 	                            </a>\
 							  	<div class="dropdown-menu dropdown-menu-sm dropdown-menu-right">\
 									<ul class="nav nav-hoverable flex-column">\
-							    		<li class="nav-item"><a class="nav-link" target="_blank" href="print-order/${row.id}"><span class="nav-text">In hoá đơn cho PC</span></a></li>\
-							    		<li class="nav-item"><a class="nav-link" target="_blank" href="print-order/${row.id}"><span class="nav-text">In hoá đơn bình thường</span></a></li>\
+							    		<li class="nav-item"><a class="nav-link" target="_blank" href="print-order/${row.id}"><span class="nav-text">In hoá đơn ẩn giá</span></a></li>\
+							    		<li class="nav-item"><a class="nav-link" target="_blank" href="print-orderdetail/${row.id}"><span class="nav-text">In hoá đơn chi tiết</span></a></li>\
 									</ul>\
 							  	</div>\
 							</div>\

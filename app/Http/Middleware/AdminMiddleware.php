@@ -17,9 +17,11 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next)
     {
-        $user = Auth::user();
-        if($user->role == 0){
-            return $next($request);
+        if(Auth::check()){
+            $user = Auth::user();
+            if($user->role == 0){
+                return $next($request);
+            }
         }
         return redirect('/dashboard');
     }

@@ -170,7 +170,7 @@
         <td colspan="4" class="tong">Tổng cộng</td>
         <td class="cotSo" align='right'>{{number_format($total, 0, ',', '.')}}đ</td>
     </tr>
-    @if($order->coupon)
+    @if($order->coupon != null)
         @php
             $coupon = \App\Models\Coupon::query()->where('code','=',$order->coupon)->first();
             if($coupon->condition == 0){
@@ -180,9 +180,9 @@
             }
             if ($iprice + $total_fee > $total - $total_coupon) {
                 $total_coupon = $iprice + $total_fee;
-                $intomoney = $iprice + $total_fee;
+                $total = $iprice + $total_fee;
             } else {
-                $intomoney = $total - $total_coupon;
+                $total = $total - $total_coupon;
             }
         @endphp
         <tr>
@@ -190,10 +190,10 @@
             <td class="cotSo" align='right'>{{number_format($total_coupon, 0, ',', '.')}}đ</td>
         </tr>
     @endif
-    @if($order->fee_ship)
-        <?php
-            $intomoney += $order->fee_ship
-        ?>
+    @if($order->fee_ship != null)
+        @php
+            $total += $order->fee_ship
+        @endphp
         <tr>
             <td colspan="4" class="tong">Phí ship</td>
             <td class="cotSo" align='right'>{{number_format($order->fee_ship, 0, ',', '.')}}đ</td>
@@ -201,7 +201,7 @@
     @endif
     <tr>
         <td colspan="4" class="tong">Thành tiền</td>
-        <td class="cotSo" align='right'>{{number_format($intomoney, 0, ',', '.')}}đ</td>
+        <td class="cotSo" align='right'>{{number_format($total, 0, ',', '.')}}đ</td>
     </tr>
 </table>
 <div class="footer-left">

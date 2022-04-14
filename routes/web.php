@@ -158,7 +158,7 @@ Route::get('/edit-order/{id}',[OrderController::class, 'edit']);
 Route::post('/update-order/{id}',[OrderController::class,'update']);
 Route::get('/destroy-order/{id}',[OrderController::class,'destroy']);
 Route::get('/print-order/{id}',[OrderController::class,'print']);
-Route::get('/print-orderdetail/{id}',[OrderController::class,'printdetail']);
+Route::get('/print-orderdetail/{id}',[OrderController::class,'print_detail']);
 Route::post('/autocomplete-import',[ImportController::class,'autocomplete']);
 
 Route::post('/add-cart',[OrderController::class,'add_cart']);

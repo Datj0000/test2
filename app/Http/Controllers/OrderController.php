@@ -460,6 +460,13 @@ class OrderController extends Controller
     public function print(int $id)
     {
         if (Auth::check()) {
+            $detail = OrderDetail::query()->select('units.name as unit_name','brands.name as brand_name','products.name as product_name','importdetails.*','orderdetails.*')
+                ->join('importdetails','importdetails.product_code','=','orderdetails.product_code')
+                ->join('products','products.id','=','importdetails.product_id')
+                ->join('brands','brands.id','=','products.brand_id')
+                ->join('units','units.id','=','products.unit_id')
+                ->where('orderdetails.order_id','=',$id)
+                ->get();
             $order = Order::query()->where('id','=',$id)->first();
             $customer = Customer::query()->where('id','=',$order->customer_id)->first();
             $pdf = \PDF::setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true])->loadView('pdf.order',[
@@ -470,7 +477,7 @@ class OrderController extends Controller
             return $pdf->stream();
         }
     }
-    public function printdetail(int $id)
+    public function print_detail(int $id)
     {
         if (Auth::check()) {
             $order = Order::query()->where('id','=',$id)->first();
