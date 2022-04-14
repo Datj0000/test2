@@ -15,48 +15,50 @@ class BrandSeeder extends Seeder
     public function run()
     {
         Brand::query()->create(
-            [
-                'brand_name' => 'Lexar',
-            ],
-            [
-                'brand_name' => 'Asus',
-            ],
-            [
-                'brand_name' => 'Kingston',
-            ],
-            [
-                'brand_name' => 'Corsair',
-            ],
-            [
-                'brand_name' => 'Pisen',
-            ],
-            [
-                'brand_name' => 'MSI',
-            ],
-            [
-                'brand_name' => 'Xiaomi',
-            ],
-            [
-                'brand_name' => 'HP',
-            ],
-            [
-                'brand_name' => 'Tomato',
-            ],
-            [
-                'brand_name' => 'Logitech',
-            ],
-            [
-                'brand_name' => 'LG',
-            ],
-            [
-                'brand_name' => 'BenQ',
-            ],
-            [
-                'brand_name' => 'Lenovo',
-            ],
-            [
-                'brand_name' => 'AKKO',
-            ],
+            array(
+                [
+                    'brand_name' => 'Lexar',
+                ],
+                [
+                    'brand_name' => 'Asus',
+                ],
+                [
+                    'brand_name' => 'Kingston',
+                ],
+                [
+                    'brand_name' => 'Corsair',
+                ],
+                [
+                    'brand_name' => 'Pisen',
+                ],
+                [
+                    'brand_name' => 'MSI',
+                ],
+                [
+                    'brand_name' => 'Xiaomi',
+                ],
+                [
+                    'brand_name' => 'HP',
+                ],
+                [
+                    'brand_name' => 'Tomato',
+                ],
+                [
+                    'brand_name' => 'Logitech',
+                ],
+                [
+                    'brand_name' => 'LG',
+                ],
+                [
+                    'brand_name' => 'BenQ',
+                ],
+                [
+                    'brand_name' => 'Lenovo',
+                ],
+                [
+                    'brand_name' => 'AKKO',
+                ],
+            )
         );
     }
 }

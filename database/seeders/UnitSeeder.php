@@ -15,15 +15,17 @@ class UnitSeeder extends Seeder
     public function run()
     {
         Unit::query()->create(
-            [
-                'unit_name' => 'Cái',
-            ],
-            [
-                'unit_name' => 'Bộ',
-            ],
-            [
-                'unit_name' => 'Mét',
-            ],
+            array(
+                [
+                    'unit_name' => 'Cái',
+                ],
+                [
+                    'unit_name' => 'Bộ',
+                ],
+                [
+                    'unit_name' => 'Mét',
+                ],
+            )
         );
     }
 }
