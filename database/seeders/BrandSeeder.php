@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class BrandSeeder extends Seeder
 {
@@ -14,49 +15,49 @@ class BrandSeeder extends Seeder
      */
     public function run()
     {
-        Brand::query()->create(
+        DB::table('brands')->insert(
             array(
                 [
-                    'brand_name' => 'Lexar',
+                    'name' => 'Lexar',
                 ],
                 [
-                    'brand_name' => 'Asus',
+                    'name' => 'Asus',
                 ],
                 [
-                    'brand_name' => 'Kingston',
+                    'name' => 'Kingston',
                 ],
                 [
-                    'brand_name' => 'Corsair',
+                    'name' => 'Corsair',
                 ],
                 [
-                    'brand_name' => 'Pisen',
+                    'name' => 'Pisen',
                 ],
                 [
-                    'brand_name' => 'MSI',
+                    'name' => 'MSI',
                 ],
                 [
-                    'brand_name' => 'Xiaomi',
+                    'name' => 'Xiaomi',
                 ],
                 [
-                    'brand_name' => 'HP',
+                    'name' => 'HP',
                 ],
                 [
-                    'brand_name' => 'Tomato',
+                    'name' => 'Tomato',
                 ],
                 [
-                    'brand_name' => 'Logitech',
+                    'name' => 'Logitech',
                 ],
                 [
-                    'brand_name' => 'LG',
+                    'name' => 'LG',
                 ],
                 [
-                    'brand_name' => 'BenQ',
+                    'name' => 'BenQ',
                 ],
                 [
-                    'brand_name' => 'Lenovo',
+                    'name' => 'Lenovo',
                 ],
                 [
-                    'brand_name' => 'AKKO',
+                    'name' => 'AKKO',
                 ],
             )
         );

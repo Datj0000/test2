@@ -145,9 +145,6 @@
             $date_start = \Carbon\Carbon::parse($item->date_start)->floorMonth();
             $date_end = \Carbon\Carbon::parse($item->date_end)->floorMonth();
             $diff = $date_end->diffInMonths($date_start);
-            if($diff < 1){
-                $diff = 1;
-            }
             $iprice += $item->import_price;
             $detail = \App\Models\ImportDetail::query()->where('product_code','=',$item->product_code)->first();
             $detail_count = \App\Models\ImportDetail::query()->where('import_id','=',$detail->import_id)->get();
@@ -170,6 +167,9 @@
         <td colspan="4" class="tong">Tổng cộng</td>
         <td class="cotSo" align='right'>{{number_format($total, 0, ',', '.')}}đ</td>
     </tr>
+    @php
+        $money = $total
+    @endphp
     @if($order->coupon != null)
         @php
             $coupon = \App\Models\Coupon::query()->where('code','=',$order->coupon)->first();
@@ -180,9 +180,9 @@
             }
             if ($iprice + $total_fee > $total - $total_coupon) {
                 $total_coupon = $iprice + $total_fee;
-                $total = $iprice + $total_fee;
+                $money = $iprice + $total_fee;
             } else {
-                $total = $total - $total_coupon;
+                $money = $total - $total_coupon;
             }
         @endphp
         <tr>
@@ -192,7 +192,7 @@
     @endif
     @if($order->fee_ship != null)
         @php
-            $total += $order->fee_ship
+            $money += $order->fee_ship
         @endphp
         <tr>
             <td colspan="4" class="tong">Phí ship</td>
@@ -201,7 +201,7 @@
     @endif
     <tr>
         <td colspan="4" class="tong">Thành tiền</td>
-        <td class="cotSo" align='right'>{{number_format($total, 0, ',', '.')}}đ</td>
+        <td class="cotSo" align='right'>{{number_format($money, 0, ',', '.')}}đ</td>
     </tr>
 </table>
 <div class="footer-left">

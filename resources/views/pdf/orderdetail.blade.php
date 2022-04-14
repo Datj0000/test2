@@ -146,9 +146,6 @@
             $date_start = \Carbon\Carbon::parse($item->date_start)->floorMonth();
             $date_end = \Carbon\Carbon::parse($item->date_end)->floorMonth();
             $diff = $date_end->diffInMonths($date_start);
-            if($diff < 1){
-                $diff = 1;
-            }
             $iprice += $item->import_price;
             $detail = \App\Models\ImportDetail::query()->where('product_code','=',$item->product_code)->first();
             $detail_count = \App\Models\ImportDetail::query()->where('import_id','=',$detail->import_id)->get();

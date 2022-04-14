@@ -4,7 +4,6 @@ use App\Http\Controllers\InsuranceController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SupplierController;
-use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\UnitController;
@@ -15,7 +14,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CouponController;
 use App\Http\Controllers\ImportDetailController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\OrderDetailController;
+use App\Http\Controllers\NotificationController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -169,4 +168,6 @@ Route::post('/destroy-cart',[OrderController::class,'destroy_cart']);
 Route::post('/feeship',[OrderController::class,'feeship']);
 Route::post('/autocomplete-order',[OrderController::class,'autocomplete']);
 
+//Notification
+Route::get('/load-noti',[NotificationController::class,'fetchdata']);
 

@@ -30,29 +30,29 @@ class CheckInsurance extends Command
      */
     public function handle()
     {
-        $today = Carbon::now('Asia/Ho_Chi_Minh')->floorMonth();
+        $today = Carbon::now()->floorMonth();
         $detail = ImportDetailModel::query()->get();
-            if($detail->toArray()){
-                foreach ($detail->toArray() as $key => $item){
-                    $date_end = Carbon::parse($item['date_end'])->floorMonth();
-                    $diff = $today->diffInMonths($date_end);
-                    if($diff < 1){
-                        $check = NotificationModel::query()->where('status','=',0)->where('importdetail_id','=',$item['id'])->first();
-                        if(!$check){
-                            NotificationModel::query()->create([
-                                'importdetail_id' => $item['id'],
-                                'status' => 0,
-                            ]);
-                        }
-                    } else if($diff < 2){
-                        $check = NotificationModel::query()->where('status','=',1)->where('importdetail_id','=',$item['id'])->first();
-                        if($check){
-                            NotificationModel::query()->create([
-                                'importdetail_id' => $item['id'],
-                                'status' => 1,
-                            ]);
-                        }
+        if($detail->toArray()){
+            foreach ($detail->toArray() as $key => $item){
+                $date_end = Carbon::parse($item['date_end'])->floorMonth();
+                if($today->lt($date_end) && $today->diffInMonths($date_end) == 1){
+                    $check = NotificationModel::query()->where('status','=',0)->where('importdetail_id','=',$item['id'])->first();
+                    if(!$check){
+                        NotificationModel::query()->create([
+                            'importdetail_id' => $item['id'],
+                            'status' => 0,
+                        ]);
                     }
+                }
+                else if($today->gt($date_end)){
+                    $check = NotificationModel::query()->where('status','=',1)->where('importdetail_id','=',$item['id'])->first();
+                    if(!$check){
+                        NotificationModel::query()->create([
+                            'importdetail_id' => $item['id'],
+                            'status' => 1,
+                        ]);
+                    }
+                }
             }
         }
     }

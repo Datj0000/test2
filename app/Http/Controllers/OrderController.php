@@ -182,9 +182,6 @@ class OrderController extends Controller
                 $date_start = Carbon::parse($detail->date_start)->floorMonth();
                 $date_end = Carbon::parse($detail->date_end)->floorMonth();
                 $insurance = $date_end->diffInMonths($date_start);
-                if ($insurance < 1){
-                    $insurance = 1;
-                }
                 if ($cart == true) {
                     $check = 0;
                     foreach ($cart as $key => $val) {
@@ -428,9 +425,6 @@ class OrderController extends Controller
                     $date_start = Carbon::parse($key['date_start'])->floorMonth();
                     $date_end = Carbon::parse($key['date_end'])->floorMonth();
                     $insurance = $date_end->diffInMonths($date_start);
-                    if ($insurance < 1){
-                        $insurance = 1;
-                    }
                     $cart[] = array(
                         'session_id' => $session_id,
                         'product_code' => $key['product_code'],

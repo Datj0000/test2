@@ -216,6 +216,35 @@
             </div>
         </div>
     </div>
+    {{-- Edit Detail --}}
+    <div class="modal fade" id="exampleModalSizeSm4" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+         aria-hidden="True">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Sửa giá sản phẩm <span id="textedit"></span></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i aria-hidden="True" class="ki ki-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form class="form" id="form_edit_product">
+                        <div class=" card-body">
+                            <input type="hidden" id="edit_importdetail_id">
+                            <div class="form-group">
+                                <label>Giá bán:</label>
+                                <input name="sprice" type="number" class="form-control form-control-solid" min="0"
+                                       id="edit_importdetail_sell_price" placeholder="Giá bán" pattern="/^-?\d+\.?\d*$/" onKeyPress="if(this.value.length==20) return false;"/>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <button id="update_product" type="button" class="btn btn-primary mr-2">Cập nhật</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
     {{-- View product detail --}}
     <div class="modal fade" id="exampleModalSizeSm" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
          aria-hidden="true">
@@ -258,9 +287,7 @@
             .then(function(response) {
                 $("#load_productdetail").html(response.data);
                 $('#responsive2').DataTable({
-                    "ordering": false,
                     "responsive": true,
-                    "searching": false,
                     "bPaginate": false,
                     "bLengthChange": false,
                     "bFilter": true,
@@ -434,6 +461,24 @@
                 }
             }
         );
+        var form3 = KTUtil.getById('form_edit_productdetail');
+        var validation3 = FormValidation.formValidation(
+            form3, {
+                fields: {
+                    sprice: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Vui lòng điền thông tin'
+                            },
+                        }
+                    },
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap()
+                }
+            }
+        );
         $('#create_product').click(function(e) {
             e.preventDefault();
             var image = $('#product_image').get(0).files[0];
@@ -508,20 +553,20 @@
                     'X-CSRF-TOKEN': $('meta[name = "csrf-token" ]').attr('content')
                 },
             })
-                .then(function (response) {
-                    if(response.data.image != null){
-                        var image = "url(uploads/import/" + response.data.image + ")";
-                    } else {
-                        var image = "url(asset/media/users/noimage.png)";
-                    }
-                    $('.view_image').css("background-image", image);
-                    $('#edit_product_id').val(response.data.id);
-                    $('#edit_product_name').val(response.data.name);
-                    $('#edit_category_id').val(response.data.category_id);
-                    $('#edit_brand_id').val(response.data.brand_id);
-                    $('#edit_unit_id').val(response.data.unit_id);
-                    validation2.validate();
-                });
+            .then(function (response) {
+                if(response.data.image != null){
+                    var image = "url(uploads/import/" + response.data.image + ")";
+                } else {
+                    var image = "url(asset/media/users/noimage.png)";
+                }
+                $('.view_image').css("background-image", image);
+                $('#edit_product_id').val(response.data.id);
+                $('#edit_product_name').val(response.data.name);
+                $('#edit_category_id').val(response.data.category_id);
+                $('#edit_brand_id').val(response.data.brand_id);
+                $('#edit_unit_id').val(response.data.unit_id);
+                validation2.validate();
+            });
         });
         $('#update_product').click(function(e) {
             e.preventDefault();
@@ -634,8 +679,9 @@
                 }
             });
         });
-        $(document).on('click', '.edit_importdetail', function(e) {
+        $(document).on('click', '.edit_productdetail', function(e) {
             e.preventDefault();
+            console.log(1)
             $('#exampleModalSizeSm4').modal();
             $('#exampleModalSizeSm4').css("z-index","2000");
             var id = $(this).data('id');
@@ -646,25 +692,13 @@
                     'X-CSRF-TOKEN': $('meta[name = "csrf-token" ]').attr('content')
                 },
             })
-                .then(function (response) {
-                    $('#edit_importdetail_id').val(response.data.id);
-                    $('.view_image').css("background-image", "url(uploads/import/" +response.data.image + ")");
-                    $('#edit_product_id').val(response.data.product_id);
-                    $('#edit_importdetail_import_id').val(response.data.import_id);
-                    $('#edit_importdetail_import_price').val(response.data.import_price);
-                    $('#edit_importdetail_sell_price').val(response.data.sell_price);
-                    $('#edit_importdetail_date_start').val(response.data.date_start);
-                    $('#edit_importdetail_date_end').val(response.data.date_end);
-                    $('#edit_importdetail_quantity').val(response.data.quantity);
-                    $('#edit_importdetail_drive').val(response.data.drive);
-                    $('#edit_importdetail_vat').val(response.data.vat);
-                    validation4.validate();
-                })
-                .catch(function (error) {
-                    console.log(error);
-                });
+            .then(function (response) {
+                $('#edit_importdetail_id').val(response.data.id);
+                $('#edit_importdetail_sell_price').val(response.data.sell_price);
+                validation3.validate();
+            });
         });
-        $('#update_importdetail').click(function(e) {
+        $('#update_productdetail').click(function(e) {
             e.preventDefault();
             var id = $('#edit_importdetail_id').val();
             var import_id = $('#edit_importdetail_import_id').val();

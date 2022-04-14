@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class CategorySeeder extends Seeder
 {
@@ -14,49 +15,49 @@ class CategorySeeder extends Seeder
      */
     public function run()
     {
-        Category::query()->create(
+        DB::table('categories')->insert(
             array(
                 [
-                    'category_name' => 'CPU',
+                    'name' => 'CPU',
                 ],
                 [
-                    'category_name' => 'Ram',
+                    'name' => 'Ram',
                 ],
                 [
-                    'category_name' => 'Tản nhiệt',
+                    'name' => 'Tản nhiệt',
                 ],
                 [
-                    'category_name' => 'Main',
+                    'name' => 'Main',
                 ],
                 [
-                    'category_name' => 'Card',
+                    'name' => 'Card',
                 ],
                 [
-                    'category_name' => 'Chuột',
+                    'name' => 'Chuột',
                 ],
                 [
-                    'category_name' => 'USB',
+                    'name' => 'USB',
                 ],
                 [
-                    'category_name' => 'Ổ cứng',
+                    'name' => 'Ổ cứng',
                 ],
                 [
-                    'category_name' => 'Dây cáp',
+                    'name' => 'Dây cáp',
                 ],
                 [
-                    'category_name' => 'Webcam',
+                    'name' => 'Webcam',
                 ],
                 [
-                    'category_name' => 'Nguồn máy tính',
+                    'name' => 'Nguồn máy tính',
                 ],
                 [
-                    'category_name' => 'Case',
+                    'name' => 'Case',
                 ],
                 [
-                    'category_name' => 'Loa',
+                    'name' => 'Loa',
                 ],
                 [
-                    'category_name' => 'Lót chuột',
+                    'name' => 'Lót chuột',
                 ],
             )
         );

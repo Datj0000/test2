@@ -223,8 +223,9 @@ class ProductController extends Controller
                         <tr>
                             <th scope="col">STT</th>
                             <th scope="col">Hình ảnh</th>
-                            <th scope="col">Serial</th>
-                            <th scope="col">Tên sản phẩm</th>';
+                            <th scope="col">Tên sản phẩm</th>
+                            <th scope="col">Mã sản phẩm</th>
+                            <th scope="col">Serial</th>';
             if(Auth::user()->role <= 1){
                 $output .='
                             <th scope="col">Nhà cung cấp</th>
@@ -242,7 +243,9 @@ class ProductController extends Controller
                             <th scope="col">Bảo hành từ</th>
                             <th scope="col">Bảo hành đến</th>';
             if(Auth::user()->role <= 1){
-                $output .='<th scope="col">Chức năng</th>';
+                $output .='
+                <th scope="col">Link drive</th>
+                <th scope="col">Chức năng</th>';
             }
             $output .='
                         </tr>
@@ -277,8 +280,9 @@ class ProductController extends Controller
                     }
 
                     $output .='
-                        <td>'.$item->product_serial.'</td>
-                        <td>'.$item->product_name.'</td>';
+                        <td>'.$item->product_name.'</td>
+                        <td>'.$item->product_code.'</td>
+                        <td>'.$item->product_serial.'</td>';
                     if(Auth::user()->role <= 1){
                         $output .='<td>'.$item->supplier_name.'</td>';
                         if($item->vat){
@@ -298,18 +302,21 @@ class ProductController extends Controller
                             <td>'.$item->date_start.'</td>
                             <td>'.$item->date_end.'</td>';
                     if(Auth::user()->role <= 1){
-                        $output .='
+                        if($item->drive){
+                            $output .='
                             <td>
-                                <a href='.$item->drive.' target="_blank" class="btn btn-sm btn-clean btn-icon" title="Link hình ảnh/video">
-                                    <i class="lab la-google-drive"></i>
-                                </a>
-                                <span data-id='.$item->id.' class="edit_productdetail btn btn-sm btn-clean btn-icon" title="Sửa">
-                                    <i class="la la-edit"></i>
-                                </span>
-                                <span data-product_id='.$item->product_id.' data-id='.$item->id.' class="destroy_productdetail btn btn-sm btn-clean btn-icon" title="Xoá">
-                                    <i class="la la-trash"></i>
-                                </span>
+                                <a href='.$item->drive.' target="_blank">'.$item->drive.'</a>
                             </td>';
+                        } else{
+                            $output .='
+                            <td>Không có</td>';
+                        }
+                        $output .='
+                        <td>
+                            <span data-id='.$item->id.' class="edit_productdetail btn btn-sm btn-clean btn-icon" title="Sửa">
+                                <i class="la la-edit"></i>
+                            </span>
+                        </td>';
                     }
                 }
                 $output .= '
