@@ -8,11 +8,9 @@ use App\Models\OrderDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
-use Picqer\Barcode\BarcodeGeneratorHTML;
 
 class ImportDetailController extends Controller
 {
-
     public function fetchdata(int $id)
     {
         if (Auth::check()) {
@@ -29,6 +27,7 @@ class ImportDetailController extends Controller
                             <th scope="col">STT</th>
                             <th scope="col">Hình ảnh</th>
                             <th scope="col">Tên sản phẩm</th>
+                            <th scope="col">Mã sản phẩm</th>
                             <th scope="col">Serial</th>
                             <th scope="col">Giá nhập</th>
                             <th scope="col">Giá bán</th>
@@ -37,6 +36,7 @@ class ImportDetailController extends Controller
                             <th scope="col">Bảo hành từ</th>
                             <th scope="col">Bảo hành đến</th>
                             <th scope="col">Thành tiền</th>
+                            <th scope="col">Link drive</th>
                             <th scope="col">Chức năng</th>
                         </tr>
                     </thead>
@@ -51,7 +51,7 @@ class ImportDetailController extends Controller
                     $subtotal = $item->import_price * $item->quantity;
                     $total += $subtotal;
                     $output .= '
-                        <tr>
+                        <tr data-code="'.$item->product_code.'">
                             <td scope="row">' . $i . '</td>';
                             if($item->image){
                                 $output .='
@@ -70,6 +70,7 @@ class ImportDetailController extends Controller
                             }
                             $output .='
                             <td>'.$item->brand_name .' '. $item->product_name.'</td>
+                            <td>'.$item->product_code.'</td>
                             <td>'.$item->product_serial.'</td>
                             <td>'.number_format($item->import_price,0,',','.').'đ'.'</td>
                             <td>'.number_format($item->sell_price,0,',','.').'đ'.'</td>
@@ -82,11 +83,14 @@ class ImportDetailController extends Controller
                             $output .='
                             <td>'.$item->date_start.'</td>
                             <td>'.$item->date_end.'</td>
-                            <td>'.number_format($subtotal,0,',','.').'đ'.'</td>
+                            <td>'.number_format($subtotal,0,',','.').'đ'.'</td>';
+                            if($item->drive){
+                                $output .='<td><a href='.$item->drive.' target="_blank">'.$item->drive.'</a></td>';
+                            } else{
+                                $output .='<td>Không có</td>';
+                            }
+                            $output .='
                             <td>
-                                <a href='.$item->drive.' target="_blank" class="btn btn-sm btn-clean btn-icon" title="Link hình ảnh/video">
-                                    <i class="lab la-google-drive"></i>
-                                </a>
                                 <span data-id='.$item->id.' class="edit_importdetail btn btn-sm btn-clean btn-icon" title="Sửa">
                                     <i class="la la-edit"></i>
                                 </span>
@@ -186,7 +190,8 @@ class ImportDetailController extends Controller
         if (Auth::check()) {
             $check = ImportDetail::query()->where('product_serial','=',$request->input('product_serial'))->where('product_id','=',$request->input('product_id'))->where('import_id','!=',$request->input('import_id'))->first();
             if (!$check){
-                $detail = ImportDetail::query()->where('id','=',$id)->update([
+                $detail = ImportDetail::query()->where('id','=',$id)->first();
+                $detail->update([
                     'product_id' => $request->input('product_id'),
                     'product_serial' => $request->input('product_serial'),
                     'import_price' => $request->input('import_price'),

@@ -404,27 +404,58 @@
     </div>
 </div>
 
+<div class="dropdown">
+    <div id="print" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <a id="print_barcode" class="dropdown-item" href="#">In mã vạch</a>
+    </div>
+</div>
 <script type="text/javascript">
+    function setposition(e) {
+        var bodyOffsets = document.body.getBoundingClientRect();
+        tempX = e.pageX - bodyOffsets.left;
+        tempY = e.pageY;
+        $(".dropdown-menu").css({ 'top': tempY-470, 'left': tempX-280, 'z-index': '20000000', 'position': 'absolute' });
+    }
     function load_importdetail(id){
         axios.get('fetchdata-importdetail/' + id)
-            .then(function(response) {
-                $("#load_importdetail").html(response.data);
-                $('#table_import_'+ id).DataTable({
-                    "ordering": false,
-                    "responsive": true,
-                    "searching": false,
-                    "bPaginate": false,
-                    "bLengthChange": false,
-                    "bFilter": true,
-                    "bInfo": false,
-                    "bAutoWidth": false
-                });
-            })
-            .catch((error) => {
-                console.log(error);
+        .then(function(response) {
+            $("#load_importdetail").html(response.data);
+            $('#table_import_'+ id).DataTable({
+                "select": true,
+                "ordering": false,
+                "responsive": true,
+                "searching": false,
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bFilter": true,
+                "bInfo": false,
+                "bAutoWidth": false
             });
+            $('#table_import_'+ id).css({'position': 'relative'})
+            $('#exampleModalSizeSm5').mousedown(function(e) {
+                if(e.which != 3){
+                    $('#print').removeClass('show')
+                } else {
+                    setposition(e);
+                    $('#print').addClass('show')
+                }
+            });
+        });
     }
     $(document).ready(function() {
+        $('#print_barcode').click(function (e){
+            e.preventDefault();
+            var data = [];
+            $(".selected" ).each(function() {
+                data.push($(this).data('code'))
+            });
+            axios.post('print-barcode/',{
+                data: data
+            }).then(function (reponse){
+                console.log(reponse.data)
+            })
+        });
+
         $('.choose').on('change', function() {
             var brand_id = $('#brand_id').val();
             var category_id = $('#category_id').val();

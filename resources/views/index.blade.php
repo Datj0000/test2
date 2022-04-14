@@ -662,9 +662,8 @@
         load();
         function load(){
             $(".menu-item").removeClass("menu-item-active");
-            var name = "#" + location.pathname.replace('/', '')
-            $(name).addClass("menu-item-active");
             var pathname = location.pathname.replace('/', '');
+            $("#" + pathname).addClass("menu-item-active");
             if(pathname == 'supplier' || pathname == 'category' || pathname == 'brand' || pathname == 'unit' || pathname == 'product' || pathname == 'import'){
                 $('.product').addClass("menu-item-open");
             }

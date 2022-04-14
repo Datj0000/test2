@@ -100,6 +100,7 @@ Route::group(['middleware' => 'mod'], function(){
     Route::post('/update-import/{id}',[ImportController::class,'update']);
     Route::get('/destroy-import/{id}',[ImportController::class,'destroy']);
     Route::get('/print-import/{id}',[ImportController::class,'print']);
+    Route::post('/print-barcode',[ImportController::class,'print_barcode']);
 
     //ImportDetail
     Route::get('/fetchdata-importdetail/{id}',[ImportDetailController::class,'fetchdata']);

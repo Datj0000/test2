@@ -9,7 +9,6 @@ use App\Models\ImportDetail;
 use App\Models\Product;
 use App\Models\Supplier;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -117,6 +116,17 @@ class ImportController extends Controller
                 'details' => $detail
             ]);
             return $pdf->stream();
+        }
+    }
+    public function print_barcode(Request $request)
+    {
+        if (Auth::check()) {
+            $data = $request->input('data');
+            return $data;
+            $pdf = PDF::loadView('pdf.barcode',[
+                'data' => $data
+            ]);
+            return $pdf->download();
         }
     }
     public function autocomplete(Request $request)
