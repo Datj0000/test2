@@ -386,6 +386,23 @@
             </div>
         </div>
     </div>
+    {{-- View barcode --}}
+    <div class="modal fade" id="exampleModalSizeSm6" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+         aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">In mã vạch của sản phẩm</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i aria-hidden="true" class="ki ki-close"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="load_barcode"></div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="card-body">
         <table class="table table-separate table-head-custom table-checkable display nowrap" cellspacing="0" width="100%" id="kt_datatable">
             <thead>
@@ -410,11 +427,19 @@
     </div>
 </div>
 <script type="text/javascript">
+    function In_Content(strid){
+        var prtContent = document.getElementById(strid);
+        var WinPrint = window.open('','','letf=0,top=0,width=800,height=800');
+        WinPrint.document.write(prtContent.innerHTML);
+        WinPrint.document.close();
+        WinPrint.focus();
+        WinPrint.print();
+    }
     function setposition(e) {
         var bodyOffsets = document.body.getBoundingClientRect();
         tempX = e.pageX - bodyOffsets.left;
         tempY = e.pageY;
-        $(".dropdown-menu").css({ 'top': tempY-470, 'left': tempX-280, 'z-index': '20000000', 'position': 'absolute' });
+        $(".dropdown-menu").css({ 'top': tempY-470, 'left': tempX-270, 'z-index': '20000000', 'position': 'absolute' });
     }
     function load_importdetail(id){
         axios.get('fetchdata-importdetail/' + id)
@@ -445,14 +470,18 @@
     $(document).ready(function() {
         $('#print_barcode').click(function (e){
             e.preventDefault();
-            var data = [];
+            var data = {
+                table: []
+            };
+            $('#print').removeClass('show')
             $(".selected" ).each(function() {
-                data.push($(this).data('code'))
+                data.table.push({code: $(this).data('code'), quantity:$(this).data('quantity')});
             });
             axios.post('print-barcode/',{
-                data: data
-            }).then(function (reponse){
-                console.log(reponse.data)
+                data: data,
+            }).then(function (response){
+                $('#load_barcode').html(response.data)
+                In_Content('load_barcode');
             })
         });
 

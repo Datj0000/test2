@@ -10,8 +10,9 @@
 <body>
 {{--$generator = \Picqer\Barcode\BarcodeGeneratorHTML();--}}
 {{--echo $generator->getBarcode($item,$generator::TYPE_CODE_128);--}}
-    @php
-        echo $data;
-    @endphp
+{{--    @php--}}
+{{--        echo $data;--}}
+{{--    @endphp--}}
+{{$barcode}}
 </body>
 </html>

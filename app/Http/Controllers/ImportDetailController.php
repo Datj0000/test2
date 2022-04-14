@@ -51,7 +51,7 @@ class ImportDetailController extends Controller
                     $subtotal = $item->import_price * $item->quantity;
                     $total += $subtotal;
                     $output .= '
-                        <tr data-code="'.$item->product_code.'">
+                        <tr data-quantity="'.$item->quantity - $item->soldout.'" data-code="'.$item->product_code.'">
                             <td scope="row">' . $i . '</td>';
                             if($item->image){
                                 $output .='

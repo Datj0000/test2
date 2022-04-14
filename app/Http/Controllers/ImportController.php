@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
+use Picqer\Barcode\BarcodeGeneratorHTML;
 
 class ImportController extends Controller
 {
@@ -57,7 +58,7 @@ class ImportController extends Controller
                 $check = Import::query()->where('code','=',$code)->first();
             } while ($check);
             $import = Import::query()->create([
-                'code' => rand(106890122,1000000000),
+                'code' => $code,
                 'supplier_id' => $request->input('supplier_id'),
                 'fee_ship' => $request->input('fee_ship'),
             ]);
@@ -110,7 +111,7 @@ class ImportController extends Controller
                 ->join('products','products.id','=','importdetails.product_id')
                 ->join('brands','brands.id','=','products.brand_id')
                 ->where('importdetails.id','=',$id)->get();
-            $pdf = PDF::loadView('pdf.import',[
+            $pdf = PDF::setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true])->loadView('pdf.import',[
                 'import' => $import,
                 'supplier' => $supplier,
                 'details' => $detail
@@ -122,11 +123,17 @@ class ImportController extends Controller
     {
         if (Auth::check()) {
             $data = $request->input('data');
-            return $data;
-            $pdf = PDF::loadView('pdf.barcode',[
-                'data' => $data
-            ]);
-            return $pdf->download();
+            $output = '';
+            foreach ($data['table'] as $key => $item){
+                for($i = 0 ; $i < $item['quantity']; $i++){
+                    $output .= '
+                    <div style="max-width: 140px; float: left; margin-right: 20px; margin-bottom: -10px">
+                        '.\Milon\Barcode\Facades\DNS1DFacade::getBarcodeHTML($item['code'], "C128",1.4,22).'
+                        <p style="text-align: center">'.$item['code'].'</p>
+                    </div>';
+                }
+            }
+            return $output;
         }
     }
     public function autocomplete(Request $request)
@@ -138,9 +145,7 @@ class ImportController extends Controller
             if ($query->count() > 0) {
                 $output = '<ul class="dropdown-menu2">';
                     foreach ($query as $key => $val) {
-                        $output .= '
-                                <li class="li_search_import" data-id="'.$val->id.'">Mã đơn: ' . $val->code . ' - Nhà cung cấp ' . $val->supplier_name . '</li>
-                           ';
+                        $output .= '<li class="li_search_import" data-id="'.$val->id.'">Mã đơn: ' . $val->code . ' - Nhà cung cấp ' . $val->supplier_name . '</li>';
                     }
                 $output .= '</ul>';
                 return $output;
