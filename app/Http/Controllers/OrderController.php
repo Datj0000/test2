@@ -35,7 +35,7 @@ class OrderController extends Controller
         if (Auth::check()) {
             $data = Order::query()->select('customers.name as customer_name','orders.*')
                 ->join('customers','customers.id','=','orders.customer_id')
-                ->get();
+                ->orderBy('id','DESC')->get();
             return response()->json([
                 "data" => $data->toArray(),
             ]);
