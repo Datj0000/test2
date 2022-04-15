@@ -217,7 +217,7 @@
         </div>
     </div>
     {{-- Edit Detail --}}
-    <div class="modal fade" id="exampleModalSizeSm4" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2"
+    <div class="modal fade" id="exampleModalSizeSm2" tabindex="-1" role="dialog" aria-labelledby="exampleModalSizeSm2"
          aria-hidden="True">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
@@ -228,7 +228,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form class="form" id="form_edit_product">
+                    <form class="form" id="form_edit_price">
                         <div class=" card-body">
                             <input type="hidden" id="edit_importdetail_id">
                             <div class="form-group">
@@ -238,7 +238,7 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <button id="update_product" type="button" class="btn btn-primary mr-2">Cập nhật</button>
+                            <button id="update_price" type="button" class="btn btn-primary mr-2">Cập nhật</button>
                         </div>
                     </form>
                 </div>
@@ -284,20 +284,17 @@
 <script type="Text/javascript">
     function load_productdetail(id){
         axios.get('load-productdetail/' + id)
-            .then(function(response) {
-                $("#load_productdetail").html(response.data);
-                $('#responsive2').DataTable({
-                    "responsive": true,
-                    "bPaginate": false,
-                    "bLengthChange": false,
-                    "bFilter": true,
-                    "bInfo": false,
-                    "bAutoWidth": false
-                });
-            })
-            .catch((error) => {
-                console.log(error);
+        .then(function(response) {
+            $("#load_productdetail").html(response.data);
+            $('#responsive2').DataTable({
+                "responsive": true,
+                "bPaginate": false,
+                "bLengthChange": false,
+                "bFilter": true,
+                "bInfo": false,
+                "bAutoWidth": false
             });
+        });
     }
     $(document).ready(function() {
         var i = 0;
@@ -461,7 +458,7 @@
                 }
             }
         );
-        var form3 = KTUtil.getById('form_edit_productdetail');
+        var form3 = KTUtil.getById('form_edit_price');
         var validation3 = FormValidation.formValidation(
             form3, {
                 fields: {
@@ -616,9 +613,6 @@
                                 timer: 1500
                             });
                         }
-                    })
-                    .catch(function (error) {
-                        console.log(error);
                     });
                 } else {
                     swal.fire({
@@ -679,11 +673,7 @@
                 }
             });
         });
-        $(document).on('click', '.edit_productdetail', function(e) {
-            e.preventDefault();
-            console.log(1)
-            $('#exampleModalSizeSm4').modal();
-            $('#exampleModalSizeSm4').css("z-index","2000");
+        $(document).on('click', '.edit_price', function(e) {
             var id = $(this).data('id');
             axios({
                 url: 'edit-importdetail/' + id,
@@ -692,72 +682,38 @@
                     'X-CSRF-TOKEN': $('meta[name = "csrf-token" ]').attr('content')
                 },
             })
-            .then(function (response) {
-                $('#edit_importdetail_id').val(response.data.id);
-                $('#edit_importdetail_sell_price').val(response.data.sell_price);
-                validation3.validate();
-            });
+                .then(function (response) {
+                    $('#exampleModalSizeSm2').modal();
+                    $('#exampleModalSizeSm2').css("z-index","2000");
+                    $('#edit_importdetail_id').val(response.data.id);
+                    $('#edit_importdetail_sell_price').val(response.data.sell_price);
+                    validation3.validate();
+                });
         });
-        $('#update_productdetail').click(function(e) {
+        $('#update_price').click(function(e) {
             e.preventDefault();
             var id = $('#edit_importdetail_id').val();
-            var import_id = $('#edit_importdetail_import_id').val();
-            var product_id = $('#edit_product_id').val();
-            var image = $('#edit_importdetail_image').get(0).files[0];
-            var import_price = $('#edit_importdetail_import_price').val();
             var sell_price = $('#edit_importdetail_sell_price').val();
-            var date_start = $('#edit_importdetail_date_start').val();
-            var date_end = $('#edit_importdetail_date_end').val();
-            var quantity = $('#edit_importdetail_quantity').val();
-            var drive = $('#edit_importdetail_drive').val();
-            var vat = $('#edit_importdetail_vat').val();
-            validation4.validate().then(function(status) {
+            validation3.validate().then(function(status) {
                 if (status == 'Valid') {
-                    var form_data = new FormData();
-                    form_data.append("import_id", import_id);
-                    form_data.append("product_id", product_id);
-                    form_data.append("image", image);
-                    form_data.append("import_price", import_price);
-                    form_data.append("sell_price", sell_price);
-                    form_data.append("date_start", date_start);
-                    form_data.append("date_end", date_end);
-                    form_data.append("quantity", quantity);
-                    form_data.append("drive", drive);
-                    form_data.append("vat", vat);
                     axios({
-                        url: 'update-importdetail/'+id,
+                        url: 'update-price/'+id,
                         method: 'POST',
-                        data: form_data,
-                        headers: {
-                            'X-CSRF-TOKEN': $('meta[name = "csrf-token" ]').attr('content'),
-                            'cache': false,
-                            'Content-Type' : false,
-                            'processData': false,
+                        data: {
+                            sell_price: sell_price
                         },
-                        withCredentials: true,
                     })
-                        .then(function (response) {
-                            if (response.data == 1) {
-                                Swal.fire({
-                                    icon: "success",
-                                    title: "Thành công",
-                                    text: "Sửa sản phẩm thành công!",
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                });
-                                i = 0;
-                                table.ajax.reload();
-                                load_importdetail(import_id)
-                            } else if (response.data == 0) {
-                                Swal.fire({
-                                    icon: "error",
-                                    title: "Thất bại",
-                                    text: "Sản phẩm này đã tồn tại!",
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                });
-                            }
+                    .then(function (response) {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Thành công",
+                            text: "Sửa sản phẩm thành công!",
+                            showConfirmButton: false,
+                            timer: 1500
                         });
+                        i = 0;
+                        load_productdetail(response.data)
+                    });
                 } else {
                     swal.fire({
                         text: "Xin lỗi, có vẻ như đã phát hiện thấy một số lỗi, vui lòng thử lại .",
@@ -772,52 +728,6 @@
                     });
                 }
             });
-        });
-        $(document).on('click', '.destroy_productdetail', function(e) {
-            e.preventDefault();
-            var id = $(this).data('id');
-            var product_id = $(this).data('product_id');
-            Swal.fire({
-                title: "Xoá nhập hàng",
-                text: "Bạn có chắc là muốn xóa sản phẩm không?",
-                icon: "question",
-                showCancelButton: true,
-                confirmButtonText: "Đồng ý!",
-                cancelButtonText: "Không"
-            })
-                .then(function(result) {
-                    if (result.value) {
-                        axios({
-                            url: 'destroy-importdetail/' + id,
-                            method: 'GET',
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name = "csrf-token" ]').attr('content')
-                            },
-                        })
-                        .then(function (response) {
-                            if (response.data == 1) {
-                                Swal.fire({
-                                    icon: "success",
-                                    title: "Thành công",
-                                    text: "Xoá sản phẩm thành công!",
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                });
-                                i = 0;
-                                table.ajax.reload();
-                                load_productdetail(product_id)
-                            } else if (response.data == 0) {
-                                Swal.fire({
-                                    icon: "error",
-                                    title: "Thất bại",
-                                    text: "Đang có đơn hàng dùng sản phẩm này!",
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                });
-                            }
-                        });
-                    }
-                });
         });
     })
 </script>

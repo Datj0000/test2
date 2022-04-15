@@ -313,7 +313,7 @@ class ProductController extends Controller
                         }
                         $output .='
                         <td>
-                            <span data-id='.$item->id.' class="edit_productdetail btn btn-sm btn-clean btn-icon" title="Sửa">
+                            <span data-id='.$item->id.' class="edit_price btn btn-sm btn-clean btn-icon" title="Sửa">
                                 <i class="la la-edit"></i>
                             </span>
                         </td>';

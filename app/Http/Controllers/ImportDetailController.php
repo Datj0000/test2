@@ -224,7 +224,16 @@ class ImportDetailController extends Controller
             }
         }
     }
-
+    public function update_price(Request $request,int $id)
+    {
+        if (Auth::check()) {
+            $detail = ImportDetail::query()->where('id','=',$id)->first();
+            $detail->update([
+                'sell_price' => $request->input('sell_price'),
+            ]);
+            return $detail->product_id;
+        }
+    }
     public function destroy(int $id)
     {
         if (Auth::check()) {

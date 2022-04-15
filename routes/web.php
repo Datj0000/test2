@@ -107,9 +107,9 @@ Route::group(['middleware' => 'mod'], function(){
     Route::post('/create-importdetail/{id}',[ImportDetailController::class,'create']);
     Route::get('/edit-importdetail/{id}',[ImportDetailController::class, 'edit']);
     Route::post('/update-importdetail/{id}',[ImportDetailController::class,'update']);
+    Route::post('/update-price/{id}',[ImportDetailController::class,'update_price']);
     Route::get('/destroy-importdetail/{id}',[ImportDetailController::class,'destroy']);
 
-    //Coupon
     Route::get('/coupon',[CouponController::class,'index']);
     Route::get('/fetchdata-coupon',[CouponController::class,'fetchdata']);
     Route::post('/create-coupon',[CouponController::class,'create']);

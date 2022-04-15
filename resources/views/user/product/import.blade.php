@@ -484,7 +484,6 @@
                 In_Content('load_barcode');
             })
         });
-
         $('.choose').on('change', function() {
             var brand_id = $('#brand_id').val();
             var category_id = $('#category_id').val();
