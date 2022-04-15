@@ -274,6 +274,7 @@
                 <th>Thời gian tạo</th>
                 <th>Tên khách hàng</th>
                 <th>Thanh toán</th>
+                <th>Thành tiền</th>
                 <th>Chức năng</th>
             </tr>
             </thead>
@@ -457,6 +458,7 @@
         });
     }
     $(document).ready(function() {
+        $('.datepicker').css({"z-index":100});
         $('#order_method').change(function() {
             var value = $(this).val();
             if (value == 1) {
@@ -649,7 +651,16 @@
             }
         });
         var i = 0;
+        $.fn.dataTable.Api.register('column().title()', function() {
+            return $(this.header()).text().trim();
+        });
+        var formatter = new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND',
+        });
         var table = $('#kt_datatable').DataTable({
+            dom: `<'row'<'col-sm-12'tr>>
+			<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 dataTables_pager'lp>>`,
             ajax: 'fetchdata-order',
             columns: [{
                 'data': null,
@@ -682,6 +693,12 @@
                 },
                 {
                     'data': null,
+                    render: function(data, type, row) {
+                        return formatter.format(row.total * row.quantity + row.fee_ship);
+                    }
+                },
+                {
+                    'data': null,
                     sortable: false,
                     width: '75px',
                     overflow: 'visible',
@@ -709,6 +726,130 @@
                     }
                 },
             ],
+            initComplete: function() {
+                var thisTable = this;
+                var rowFilter = $('<tr class="filter"></tr>').appendTo($(table.table().header()));
+
+                this.api().columns().every(function() {
+                    var column = this;
+                    var input;
+
+                    switch (column.title()) {
+                        // case 'STT':
+                        case 'Mã đơn hàng':
+                            input = $(`<input type="text" class="form-control form-control-sm form-filter datatable-input" data-col-index="` + column.index() + `"/>`);
+                            break;
+                        case 'Thời gian tạo':
+                            input = $(`
+    							<div class="input-group date">
+    								<input type="text" class="form-control form-control-sm datatable-input" readonly placeholder="From" id="kt_datepicker_1"
+    								 data-col-index="` + column.index() + `"/>
+    								<div class="input-group-append">
+    									<span class="input-group-text"><i class="la la-calendar-o glyphicon-th"></i></span>
+    								</div>
+    							</div>
+    							<div class="input-group date d-flex align-content-center">
+    								<input type="text" class="form-control form-control-sm datatable-input" readonly placeholder="To" id="kt_datepicker_2"
+    								 data-col-index="` + column.index() + `"/>
+    								<div class="input-group-append">
+    									<span class="input-group-text"><i class="la la-calendar-o glyphicon-th"></i></span>
+    								</div>
+    							</div>`);
+                            break;
+                        case 'Tên khách hàng':
+                        case 'Thanh toán':
+                        case 'Thành tiền':
+                            input = $(`<input type="text" class="form-control form-control-sm form-filter datatable-input" data-col-index="` + column.index() + `"/>`);
+                            break;
+
+                            // var status = {
+                            //     1: {
+                            //         'title': 'Tiền mặt',
+                            //         'state': '0'
+                            //     },
+                            //     2: {
+                            //         'title': 'Chuyển khoản',
+                            //         'state': '1'
+                            //     },
+                            // };
+                            // input = $(`<select class="form-control form-control-sm form-filter datatable-input" title="Select" data-col-index="` + column.index() + `">
+							// 			<option value="">Chọn</option></select>`);
+                            // column.data().unique().sort().each(function(d, j) {
+                            //     $(input).append('<option value="' + d + '">' + status[d].title + '</option>');
+                            // });
+                            // break;
+                        case 'Chức năng':
+                            var search = $(`
+                                <button class="btn btn-primary kt-btn btn-sm kt-btn--icon d-block">
+							        <span>
+							            <i class="la la-search"></i>
+							            <span>Search</span>
+							        </span>
+							    </button>`);
+
+                            var reset = $(`
+                                <button class="btn btn-secondary kt-btn btn-sm kt-btn--icon">
+							        <span>
+							           <i class="la la-close"></i>
+							           <span>Reset</span>
+							        </span>
+							    </button>`);
+
+                            $('<th>').append(search).append(reset).appendTo(rowFilter);
+
+                            $(search).on('click', function(e) {
+                                e.preventDefault();
+                                var params = {};
+                                $(rowFilter).find('.datatable-input').each(function() {
+                                    var i = $(this).data('col-index');
+                                    if (params[i]) {
+                                        params[i] += '|' + $(this).val();
+                                    } else {
+                                        params[i] = $(this).val();
+                                    }
+                                });
+                                $.each(params, function(i, val) {
+                                    // apply search params to datatable
+                                    table.column(i).search(val ? val : '', false, false);
+                                });
+                                table.table().draw();
+                            });
+
+                            $(reset).on('click', function(e) {
+                                e.preventDefault();
+                                $(rowFilter).find('.datatable-input').each(function(i) {
+                                    $(this).val('');
+                                    table.column($(this).data('col-index')).search('', false, false);
+                                });
+                                table.table().draw();
+                            });
+                            break;
+                    }
+
+                    if (column.title() !== 'Actions') {
+                        $(input).appendTo($('<th>').appendTo(rowFilter));
+                    }
+                });
+
+                // hide search column for responsive table
+                var hideSearchColumnResponsive = function() {
+                    thisTable.api().columns().every(function() {
+                        var column = this
+                        if (column.responsiveHidden()) {
+                            $(rowFilter).find('th').eq(column.index()).show();
+                        } else {
+                            $(rowFilter).find('th').eq(column.index()).hide();
+                        }
+                    })
+                };
+
+                // init on datatable load
+                hideSearchColumnResponsive();
+                // recheck on window resize
+                window.onresize = hideSearchColumnResponsive;
+
+                $('#kt_datepicker_1,#kt_datepicker_2').datepicker();
+            },
             responsive: true,
             language: {
                 processing: "Đang tải dữ liệu",

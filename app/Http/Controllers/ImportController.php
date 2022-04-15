@@ -38,7 +38,7 @@ class ImportController extends Controller
     public function fetchdata()
     {
         if (Auth::check()) {
-            $data = Import::query()->select('suppliers.name as supplier_name',DB::raw('SUM(importdetails.import_price) As total'),DB::raw('SUM(importdetails.quantity) As quantity'),'imports.*')
+            $data = Import::query()->select('suppliers.name as supplier_name',DB::raw('SUM(importdetails.import_price * importdetails.quantity) As total'),'imports.*')
                 ->leftJoin('importdetails','importdetails.id','=','imports.id')
                 ->join('suppliers','suppliers.id','=','imports.supplier_id')
                 ->groupBy('suppliers.name','imports.code','imports.id','imports.fee_ship','imports.supplier_id','imports.created_at','imports.updated_at')

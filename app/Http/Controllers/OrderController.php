@@ -12,6 +12,7 @@ use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Redirect;
 
@@ -33,8 +34,11 @@ class OrderController extends Controller
     public function fetchdata()
     {
         if (Auth::check()) {
-            $data = Order::query()->select('customers.name as customer_name','orders.*')
+            $data = Order::query()->select('coupons.condition','coupons.number', 'customers.name as customer_name','orders.*',DB::raw('SUM(orderdetails.price) As total'),DB::raw('SUM(orderdetails.quantity) As quantity'))
                 ->join('customers','customers.id','=','orders.customer_id')
+                ->leftJoin('orderdetails','orderdetails.order_id','=','orders.id')
+                ->leftJoin('coupons','coupons.code','=','orders.coupon')
+                ->groupBy('coupons.condition','coupons.number','customers.name','orders.id','orders.code','orders.customer_id','orders.coupon','orders.fee_ship','orders.method_pay','orders.note','orders.created_at','orders.updated_at')
                 ->orderBy('id','DESC')->get();
             return response()->json([
                 "data" => $data->toArray(),
@@ -79,13 +83,12 @@ class OrderController extends Controller
                         'order_id' => $order->id,
                         'product_code' => $cart['product_code'],
                         'quantity' => $cart['product_quantity'],
+                        'price' => $cart['product_price'],
                     ]);
                     $detail = ImportDetail::query()->where('product_code','=',$cart['product_code'])->first();
-                    if($detail){
-                        $detail->update([
-                            'soldout' => $detail->soldout + $cart['product_quantity'],
-                        ]);
-                    }
+                    $detail->update([
+                        'soldout' => $detail->soldout + $cart['product_quantity'],
+                    ]);
                 }
                 Session::forget('cart');
             }
@@ -135,16 +138,15 @@ class OrderController extends Controller
                 foreach (Session::get('edit_cart') as $key => $cart) {
                     $query = OrderDetail::query()->where('order_id','=',$id)->where('product_code','=',$cart['product_code'])->first();
                     $detail = ImportDetail::query()->where('product_code','=',$cart['product_code'])->first();
-                    if($detail){
-                        $detail->update([
-                            'soldout' => $detail->soldout + $cart['product_quantity'] - $query->quantity,
-                        ]);
-                    }
+                    $detail->update([
+                        'soldout' => $detail->soldout + $cart['product_quantity'] - $query->quantity,
+                    ]);
                     $query->delete();
                     OrderDetail::query()->create([
                         'order_id' => $id,
                         'product_code' => $cart['product_code'],
                         'quantity' => $cart['product_quantity'],
+                        'price' => $cart['product_price'],
                     ]);
                 }
                 Session::forget('edit_cart');

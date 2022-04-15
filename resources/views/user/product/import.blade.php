@@ -553,7 +553,7 @@
                 {
                     'data': null,
                     render: function(data, type, row) {
-                        return formatter.format(row.total * row.quantity);
+                        return formatter.format(row.total);
                     }
                 },
                 {
@@ -565,7 +565,7 @@
                 {
                     'data': null,
                     render: function(data, type, row) {
-                        return formatter.format(row.total * row.quantity + row.fee_ship);
+                        return formatter.format(row.total + row.fee_ship);
                     }
                 },
                 {
