@@ -171,9 +171,9 @@ class OrderController extends Controller
     public function add_cart(Request $request)
     {
         if (Auth::check()) {
-            $detail = ImportDetail::query()->select('brands.name as brand_name','products.name as product_name','products.brand_id','importdetails.*')
+            $detail = ImportDetail::query()->select('categories.name as category_name','products.name as product_name','products.brand_id','importdetails.*')
                 ->join('products','products.id','=','importdetails.product_id')
-                ->join('brands','brands.id','=','products.brand_id')
+                ->join('categories','categories.id','=','products.category_id')
                 ->where('product_code','=',$request->input('code'))
                 ->first();
             $session_id = substr(md5(microtime()),rand(0,26),5);
@@ -194,7 +194,7 @@ class OrderController extends Controller
                             'session_id' => $session_id,
                             'product_code' => $detail->product_code,
                             'product_insurance' => $insurance,
-                            'product_name' => $detail->brand_name .' '. $detail->product_name,
+                            'product_name' => $detail->category_name .' '. $detail->product_name,
                             'product_image' => $detail->image,
                             'product_quantity' => '1',
                             'product_iprice' => $detail->import_price,
@@ -210,7 +210,7 @@ class OrderController extends Controller
                         'session_id' => $session_id,
                         'product_code' => $detail->product_code,
                         'product_insurance' => $insurance,
-                        'product_name' => $detail->brand_name .' '. $detail->product_name,
+                        'product_name' => $detail->category_name .' '. $detail->product_name,
                         'product_image' => $detail->image,
                         'product_quantity' => '1',
                         'product_iprice' => $detail->import_price,
@@ -413,10 +413,10 @@ class OrderController extends Controller
             if(Session::get('edit_cart')){
                 Session::put('edit_cart',null);
             }
-            $detail = OrderDetail::query()->select('brands.name as brand_name','products.name as product_name','importdetails.*','orderdetails.*')
+            $detail = OrderDetail::query()->select('categories.name as category_name','products.name as product_name','importdetails.*','orderdetails.*')
                 ->join('importdetails','importdetails.product_code','=','orderdetails.product_code')
                 ->join('products','products.id','=','importdetails.product_id')
-                ->join('brands','brands.id','=','products.brand_id')
+                ->join('categories','categories.id','=','products.category_id')
                 ->where('orderdetails.order_id','=',$id)
                 ->get();
             if($detail->toArray()){
@@ -429,7 +429,7 @@ class OrderController extends Controller
                         'session_id' => $session_id,
                         'product_code' => $key['product_code'],
                         'product_insurance' => $insurance,
-                        'product_name' => $key['brand_name'] .' '. $key['product_name'],
+                        'product_name' => $key['category_name'] .' '. $key['product_name'],
                         'product_image' => $key['image'],
                         'product_quantity' => $key['quantity'],
                         'product_iprice' => $key['import_price'],
@@ -442,10 +442,10 @@ class OrderController extends Controller
     }
     public function data_print(int $id){
 
-        $detail = OrderDetail::query()->select('units.name as unit_name','brands.name as brand_name','products.name as product_name','importdetails.*','orderdetails.*')
+        $detail = OrderDetail::query()->select('units.name as unit_name','categories.name as category_name','products.name as product_name','importdetails.*','orderdetails.*')
             ->join('importdetails','importdetails.product_code','=','orderdetails.product_code')
             ->join('products','products.id','=','importdetails.product_id')
-            ->join('brands','brands.id','=','products.brand_id')
+            ->join('categories','categories.id','=','products.category_id')
             ->join('units','units.id','=','products.unit_id')
             ->where('orderdetails.order_id','=',$id)
             ->get();
@@ -454,13 +454,6 @@ class OrderController extends Controller
     public function print(int $id)
     {
         if (Auth::check()) {
-            $detail = OrderDetail::query()->select('units.name as unit_name','brands.name as brand_name','products.name as product_name','importdetails.*','orderdetails.*')
-                ->join('importdetails','importdetails.product_code','=','orderdetails.product_code')
-                ->join('products','products.id','=','importdetails.product_id')
-                ->join('brands','brands.id','=','products.brand_id')
-                ->join('units','units.id','=','products.unit_id')
-                ->where('orderdetails.order_id','=',$id)
-                ->get();
             $order = Order::query()->where('id','=',$id)->first();
             $customer = Customer::query()->where('id','=',$order->customer_id)->first();
             $pdf = \PDF::setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true])->loadView('pdf.order',[

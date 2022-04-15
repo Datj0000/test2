@@ -159,7 +159,7 @@
         <tr>
             <td align='center'>{{$i++}}</td>
             <td align='center'>{{ $item->product_code}}</td>
-            <td>{{$item->brand_name }} {{ $item->product_name}} </td>
+            <td>{{$item->category_name }} {{ $item->product_name}} </td>
             <td align='center'>{{$item->quantity}} {{$item->unit_name}}</td>
             <td align='center'>{{$diff}} tháng</td>
             <td align='right'>{{number_format($item->sell_price, 0, ',', '.')}}đ</td>

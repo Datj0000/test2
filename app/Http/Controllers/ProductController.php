@@ -211,10 +211,11 @@ class ProductController extends Controller
     public function load_detail(int $id)
     {
         if (Auth::check()) {
-            $detail = ImportDetail::query()->select('suppliers.name as supplier_name','suppliers.created_at as supplier_time','products.name as product_name','imports.supplier_id','importdetails.*')
+            $detail = ImportDetail::query()->select('categories.name as category_name','suppliers.name as supplier_name','suppliers.created_at as supplier_time','products.name as product_name','imports.supplier_id','importdetails.*')
                 ->join('imports','imports.id','=','importdetails.import_id')
                 ->join('products','products.id','=','importdetails.product_id')
                 ->join('suppliers','suppliers.id','=','imports.supplier_id')
+                ->join('categories','categories.id','=','products.category_id')
                 ->where('product_id','=',$id)->get();
             $output = '
             <div class="card-body">
@@ -280,7 +281,7 @@ class ProductController extends Controller
                     }
 
                     $output .='
-                        <td>'.$item->product_name.'</td>
+                        <td>'.$item->category_name.' '.$item->product_name.'</td>
                         <td>'.$item->product_code.'</td>
                         <td>'.$item->product_serial.'</td>';
                     if(Auth::user()->role <= 1){

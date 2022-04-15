@@ -14,7 +14,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redirect;
-use Picqer\Barcode\BarcodeGeneratorHTML;
 
 class ImportController extends Controller
 {
@@ -33,7 +32,7 @@ class ImportController extends Controller
                 ->with('import',$import)
                 ->with('supplier',$supplier);
         }
-        return Redirect::to('auth.login');
+        return Redirect::to('/login');
     }
 
     public function fetchdata()
@@ -45,7 +44,7 @@ class ImportController extends Controller
                 ->groupBy('suppliers.name','imports.code','imports.id','imports.fee_ship','imports.supplier_id','imports.created_at','imports.updated_at')
                 ->orderBy('id','Desc')->get();
             return response()->json([
-                "data" => $data,
+                "data" => $data->toArray(),
             ]);
         }
     }
@@ -107,9 +106,9 @@ class ImportController extends Controller
         if (Auth::check()) {
             $import = Import::query()->where('id','=',$id)->first();
             $supplier = Supplier::query()->where('id','=',$import->supplier_id)->first();
-            $detail = ImportDetail::query()->select('brands.name as brand_name', 'products.name as product_name','importdetails.*')
+            $detail = ImportDetail::query()->select('categories.name as category_name', 'products.name as product_name','importdetails.*')
                 ->join('products','products.id','=','importdetails.product_id')
-                ->join('brands','brands.id','=','products.brand_id')
+                ->join('categories','categories.id','=','products.category_id')
                 ->where('importdetails.id','=',$id)->get();
             $pdf = PDF::setOptions(['isHtml5ParserEnabled' => true, 'isRemoteEnabled' => true])->loadView('pdf.import',[
                 'import' => $import,

@@ -125,9 +125,9 @@ class InsuranceController extends Controller
     public function add_insurance(Request $request)
     {
         if (Auth::check()) {
-            $detail = ImportDetail::query()->select('brands.name as brand_name','products.name as product_name','products.brand_id','importdetails.*')
+            $detail = ImportDetail::query()->select('categories.name as category_name','products.name as product_name','products.category_id','importdetails.*')
                 ->join('products','products.id','=','importdetails.product_id')
-                ->join('brands','brands.id','=','products.brand_id')
+                ->join('categories','categories.id','=','products.category_id')
                 ->where('product_code','=',$request->input('code'))
                 ->first();
             if($detail){
@@ -145,7 +145,7 @@ class InsuranceController extends Controller
                             'session_id' => $session_id,
                             'method' => $request->input('method'),
                             'product_code' => $detail->product_code,
-                            'product_name' => $detail->brand_name .' '. $detail->product_name,
+                            'product_name' => $detail->category_name .' '. $detail->product_name,
                             'product_image' => $detail->image,
                             'product_quantity' => '1',
                         );
@@ -159,7 +159,7 @@ class InsuranceController extends Controller
                         'session_id' => $session_id,
                         'method' => $request->input('method'),
                         'product_code' => $detail->product_code,
-                        'product_name' => $detail->brand_name .' '. $detail->product_name,
+                        'product_name' => $detail->category_name .' '. $detail->product_name,
                         'product_image' => $detail->image,
                         'product_quantity' => '1',
                     );
@@ -286,10 +286,10 @@ class InsuranceController extends Controller
             if(Session::get('edit_insurance')){
                 Session::put('edit_insurance');
             }
-            $detail = InsuranceDetail::query()->select('brands.name as brand_name','products.name as product_name','importdetails.*','insurancedetails.*')
+            $detail = InsuranceDetail::query()->select('categories.name as category_name','products.name as product_name','importdetails.*','insurancedetails.*')
                 ->join('importdetails','importdetails.product_code','=','insurancedetails.product_code')
                 ->join('products','products.id','=','importdetails.product_id')
-                ->join('brands','brands.id','=','products.brand_id')
+                ->join('categories','categories.id','=','products.category_id')
                 ->where('insurancedetails.insurance_id','=',$id)
                 ->get();
             if($detail->toArray()){
@@ -306,7 +306,7 @@ class InsuranceController extends Controller
                         'method' => $method,
                         'product_code' => $key['product_code'],
                         'product_insurance' => $insurance,
-                        'product_name' => $key['brand_name'] .' '. $key['product_name'],
+                        'product_name' => $key['category_name'] .' '. $key['product_name'],
                         'product_image' => $key['image'],
                         'product_quantity' => $key['quantity'],
                     );

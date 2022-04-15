@@ -14,9 +14,9 @@ class ImportDetailController extends Controller
     public function fetchdata(int $id)
     {
         if (Auth::check()) {
-            $detail = ImportDetail::query()->select('brands.name as brand_name','products.name as product_name','importdetails.*')
+            $detail = ImportDetail::query()->select('categories.name as category_name','products.name as product_name','importdetails.*')
                 ->join('products','products.id','=','importdetails.product_id')
-                ->join('brands','brands.id','=','products.brand_id')
+                ->join('categories','categories.id','=','products.category_id')
                 ->where('import_id','=',$id)->get();
             $output = '
             <input type="hidden" id="importid" value="'.$id.'"/>
@@ -69,7 +69,7 @@ class ImportDetailController extends Controller
                                 </td>';
                             }
                             $output .='
-                            <td>'.$item->brand_name .' '. $item->product_name.'</td>
+                            <td>'.$item->category_name .' '. $item->product_name.'</td>
                             <td>'.$item->product_code.'</td>
                             <td>'.$item->product_serial.'</td>
                             <td>'.number_format($item->import_price,0,',','.').'đ'.'</td>

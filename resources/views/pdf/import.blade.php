@@ -137,7 +137,7 @@
             @endphp
             <tr>
                 <td align='center'>{{$i++}}</td>
-                <td>{{$item->brand_name }} {{ $item->product_name}}</td>
+                <td>{{$item->category_name }} {{ $item->product_name}}</td>
                 <td align='center'>{{$item->quantity}}</td>
                 <td align='right'>{{number_format($item->import_price, 0, ',', '.')}}đ</td>
                 <td align='right'>{{number_format($subtotal, 0, ',', '.')}}đ</td>

@@ -11,10 +11,10 @@ class NotificationController extends Controller
     public function fetchdata()
     {
         if (Auth::check()) {
-            $query = Notification::query()->select('products.name as product_name','brands.name as brand_name','importdetails.*','notifications.*')
+            $query = Notification::query()->select('products.name as product_name','categories.name as category_name','importdetails.*','notifications.*')
                 ->join('importdetails','importdetails.id','=','notifications.importdetail_id')
                 ->join('products','products.id','=','importdetails.product_id')
-                ->join('brands','brands.id','=','products.brand_id')
+                ->join('categories','categories.id','=','products.category_id')
                 ->get();
             $output = '';
             foreach ($query as $key => $item){
@@ -33,7 +33,7 @@ class NotificationController extends Controller
                             </span>
                         </span>
                         <div class="d-flex flex-column flex-grow-1 mr-2">
-                            <span class="font-weight-normel text-dark-75 font-size-sm mb-1">Sản phẩm '.$item->brand_name.' '.$item->product_name.' - Mã: '.$item->product_code.' chỉ còn 1 tháng bảo hành</span>
+                            <span class="font-weight-normel text-dark-75 font-size-sm mb-1">Sản phẩm '.$item->category_name.' '.$item->product_name.' - Mã: '.$item->product_code.' chỉ còn 1 tháng bảo hành</span>
                             <span class="text-muted font-size-sm">'.Carbon::parse($item->created_at)->format('d/m/Y').'</span>
                         </div>
                     </div>';
@@ -52,7 +52,7 @@ class NotificationController extends Controller
                             </span>
                         </span>
                         <div class="d-flex flex-column flex-grow-1 mr-2">
-                            <span class="font-weight-normel text-dark-75 font-size-sm mb-1">Sản phẩm '.$item->brand_name.' '.$item->product_name.' - Mã: '.$item->product_code.' đã hết bảo hành</span>
+                            <span class="font-weight-normel text-dark-75 font-size-sm mb-1">Sản phẩm '.$item->category_name.' '.$item->product_name.' - Mã: '.$item->product_code.' đã hết bảo hành</span>
                             <span class="text-muted font-size-sm">'.Carbon::parse($item->created_at)->format('d/m/Y').'</span>
                         </div>
                     </div>';

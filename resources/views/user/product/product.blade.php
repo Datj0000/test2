@@ -269,9 +269,9 @@
             <tr>
                 <th>STT</th>
                 <th>Hình ảnh</th>
-                <th>Sản phẩm</th>
                 <th>Thương hiệu</th>
                 <th>Danh mục</th>
+                <th>Sản phẩm</th>
                 <th>Đơn vị</th>
                 <th>Tồn kho</th>
                 <th>Chức năng</th>
@@ -330,13 +330,13 @@
                     }
                 },
                 {
-                    'data': 'name'
-                },
-                {
                     'data': 'brand_name'
                 },
                 {
                     'data': 'category_name'
+                },
+                {
+                    'data': 'name'
                 },
                 {
                     'data': 'unit_name'
