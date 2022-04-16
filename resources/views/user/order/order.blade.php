@@ -694,7 +694,7 @@
                 {
                     'data': null,
                     render: function(data, type, row) {
-                        return formatter.format(row.total * row.quantity + row.fee_ship);
+                        return formatter.format(row.total + row.fee_ship);
                     }
                 },
                 {
@@ -951,16 +951,26 @@
                         },
                     })
                     .then(function (response) {
-                        Swal.fire({
-                            icon: "success",
-                            title: "Thành công",
-                            text: "Tạo đơn hàng thành công!",
-                            showConfirmButton: false,
-                            timer: 1500
-                        });
-                        i = 0;
-                        table.ajax.reload();
-                        load_cart('cart','coupon','fee');
+                       if(response.data == 1){
+                           Swal.fire({
+                               icon: "success",
+                               title: "Thành công",
+                               text: "Tạo đơn hàng thành công!",
+                               showConfirmButton: false,
+                               timer: 1500
+                           });
+                           i = 0;
+                           table.ajax.reload();
+                           load_cart('cart','coupon','fee');
+                       } else {
+                           Swal.fire({
+                               icon: "error",
+                               title: "Thất bại",
+                               text: "Đơn hàng chưa có sản phẩm nào!",
+                               showConfirmButton: false,
+                               timer: 1500
+                           });
+                       }
                     });
                 } else {
                     swal.fire({
@@ -1028,9 +1038,7 @@
                         },
                     })
                     .then(function (response) {
-                        if (response.data == 1) {
-                            Swal.fire("", "đơn hàng này đã tồn tại!","warning");
-                        } else {
+                        if(response.data == 1){
                             Swal.fire({
                                 icon: "success",
                                 title: "Thành công",
@@ -1040,6 +1048,14 @@
                             });
                             i = 0;
                             table.ajax.reload();
+                        } else {
+                            Swal.fire({
+                                icon: "error",
+                                title: "Thất bại",
+                                text: "Đơn hàng chưa có sản phẩm nào!",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
                         }
                     });
                 } else {
@@ -1068,28 +1084,28 @@
                 confirmButtonText: "Đồng ý!",
                 cancelButtonText: "Không"
             })
-                .then(function(result) {
-                    if (result.value) {
-                        axios({
-                            url: 'destroy-order/' + id,
-                            method: 'GET',
-                            headers: {
-                                'X-CSRF-TOKEN': $('meta[name = "csrf-token" ]').attr('content')
-                            },
-                        })
-                        .then(function () {
-                            Swal.fire({
-                                icon: "success",
-                                title: "Thành công",
-                                text: "Xoá đơn hàng thành công!",
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
-                            i = 0;
-                            table.ajax.reload();
+            .then(function(result) {
+                if (result.value) {
+                    axios({
+                        url: 'destroy-order/' + id,
+                        method: 'GET',
+                        headers: {
+                            'X-CSRF-TOKEN': $('meta[name = "csrf-token" ]').attr('content')
+                        },
+                    })
+                    .then(function () {
+                        Swal.fire({
+                            icon: "success",
+                            title: "Thành công",
+                            text: "Xoá đơn hàng thành công!",
+                            showConfirmButton: false,
+                            timer: 1500
                         });
-                    }
-                });
+                        i = 0;
+                        table.ajax.reload();
+                    });
+                }
+            });
         });
         $(document).on('change', '.cart_qty', function(e) {
             var type = $(this).data('type');

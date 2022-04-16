@@ -34,12 +34,12 @@ class OrderController extends Controller
     public function fetchdata()
     {
         if (Auth::check()) {
-            $data = Order::query()->select('coupons.condition','coupons.number', 'customers.name as customer_name','orders.*',DB::raw('SUM(orderdetails.price) As total'),DB::raw('SUM(orderdetails.quantity) As quantity'))
-                ->join('customers','customers.id','=','orders.customer_id')
-                ->leftJoin('orderdetails','orderdetails.order_id','=','orders.id')
+            $data = OrderDetail::query()->select('coupons.condition','coupons.number', 'customers.name as customer_name','orders.*',DB::raw('SUM(orderdetails.price * orderdetails.quantity) As total'), 'orders.*')
+                ->leftJoin('orders','orders.id','=','orderdetails.order_id')
                 ->leftJoin('coupons','coupons.code','=','orders.coupon')
+                ->join('customers','customers.id','=','orders.customer_id')
                 ->groupBy('coupons.condition','coupons.number','customers.name','orders.id','orders.code','orders.customer_id','orders.coupon','orders.fee_ship','orders.method_pay','orders.note','orders.created_at','orders.updated_at')
-                ->orderBy('id','DESC')->get();
+                ->orderBy('id','Desc')->get();
             return response()->json([
                 "data" => $data->toArray(),
             ]);
@@ -49,35 +49,35 @@ class OrderController extends Controller
     public function create(Request $request)
     {
         if (Auth::check()) {
-            do {
-                $code = rand(106890122,1000000000);
-                $check = Order::query()->where('code','=',$code)->first();
-            } while ($check);
-            $order = Order::query()->create([
-                'code' => $code,
-                'customer_id' => $request->input('customer_id'),
-                'method_pay' => $request->input('method_pay'),
-                'note' => $request->input('note'),
-            ]);
-            if (Session::get('fee')){
-                $order->update([
-                    'fee_ship' => Session::get('fee')
-                ]);
-                Session::forget('fee');
-            }
-            if (Session::get('coupon')){
-                foreach (Session::get('coupon') as $key => $cou) {
-                    $order->update([
-                        'coupon' => $cou['code']
-                    ]);
-                    $coupon = Coupon::query()->where('code','=',$cou['code'])->first();
-                    $coupon?->update([
-                        'time' => $coupon->time - 1,
-                    ]);
-                }
-                Session::forget('coupon');
-            }
             if (Session::get('cart')) {
+                do {
+                    $code = rand(106890122,1000000000);
+                    $check = Order::query()->where('code','=',$code)->first();
+                } while ($check);
+                $order = Order::query()->create([
+                    'code' => $code,
+                    'customer_id' => $request->input('customer_id'),
+                    'method_pay' => $request->input('method_pay'),
+                    'note' => $request->input('note'),
+                ]);
+                if (Session::get('fee')){
+                    $order->update([
+                        'fee_ship' => Session::get('fee')
+                    ]);
+                    Session::forget('fee');
+                }
+                if (Session::get('coupon')){
+                    foreach (Session::get('coupon') as $key => $cou) {
+                        $order->update([
+                            'coupon' => $cou['code']
+                        ]);
+                        $coupon = Coupon::query()->where('code','=',$cou['code'])->first();
+                        $coupon?->update([
+                            'time' => $coupon->time - 1,
+                        ]);
+                    }
+                    Session::forget('coupon');
+                }
                 foreach (Session::get('cart') as $key => $cart) {
                     OrderDetail::query()->create([
                         'order_id' => $order->id,
@@ -91,6 +91,9 @@ class OrderController extends Controller
                     ]);
                 }
                 Session::forget('cart');
+                return 1;
+            } else{
+                return 0;
             }
         }
     }
@@ -110,31 +113,31 @@ class OrderController extends Controller
     public function update(Request $request,int $id)
     {
         if (Auth::check()) {
-            $order = Order::query()->where('id','=',$id)->first();
-            $order->update([
-                'customer_id' => $request->input('customer_id'),
-                'method_pay' => $request->input('method_pay'),
-                'note' => $request->input('note'),
-            ]);
-            if (Session::get('edit_fee')){
-                $order->update([
-                    'fee_ship' => Session::get('edit_fee')
-                ]);
-                Session::forget('edit_fee');
-            }
-            if (Session::get('edit_coupon')){
-                foreach (Session::get('edit_coupon') as $key => $cou) {
-                    if($order->coupon != $cou['code']){
-                        $coupon = Coupon::query()->where ('code','=',$order->coupon)->first();
-                        $coupon?->update(['time' => $coupon->time + 1,]);
-                        $order->update(['coupon' => $cou['code']]);
-                        $coupon2 = Coupon::query()->where('code','=',$cou['code'])->first();
-                        $coupon2?->update(['time' => $coupon2->time - 1,]);
-                    }
-                }
-                Session::forget('edit_coupon');
-            }
             if (Session::get('edit_cart')) {
+                $order = Order::query()->where('id','=',$id)->first();
+                $order->update([
+                    'customer_id' => $request->input('customer_id'),
+                    'method_pay' => $request->input('method_pay'),
+                    'note' => $request->input('note'),
+                ]);
+                if (Session::get('edit_fee')){
+                    $order->update([
+                        'fee_ship' => Session::get('edit_fee')
+                    ]);
+                    Session::forget('edit_fee');
+                }
+                if (Session::get('edit_coupon')){
+                    foreach (Session::get('edit_coupon') as $key => $cou) {
+                        if($order->coupon != $cou['code']){
+                            $coupon = Coupon::query()->where ('code','=',$order->coupon)->first();
+                            $coupon?->update(['time' => $coupon->time + 1,]);
+                            $order->update(['coupon' => $cou['code']]);
+                            $coupon2 = Coupon::query()->where('code','=',$cou['code'])->first();
+                            $coupon2?->update(['time' => $coupon2->time - 1,]);
+                        }
+                    }
+                    Session::forget('edit_coupon');
+                }
                 foreach (Session::get('edit_cart') as $key => $cart) {
                     $query = OrderDetail::query()->where('order_id','=',$id)->where('product_code','=',$cart['product_code'])->first();
                     $detail = ImportDetail::query()->where('product_code','=',$cart['product_code'])->first();
@@ -150,6 +153,9 @@ class OrderController extends Controller
                     ]);
                 }
                 Session::forget('edit_cart');
+                return 1;
+            } else{
+                return 0;
             }
         }
     }
